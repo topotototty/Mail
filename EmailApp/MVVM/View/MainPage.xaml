@@ -1,0 +1,72 @@
+﻿<Page x:Class="EmailApp.MVVM.View.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:EmailApp.MVVM.View" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewmodel="clr-namespace:EmailApp.MVVM.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainPageVM}"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="900"
+      Title="MainPage">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <ListBox Grid.Row="1" ItemsSource="{Binding Folders}" Background="AliceBlue"/>
+        <Grid Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Right" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="45" />
+                <RowDefinition Height="45" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel>
+                <Label FontSize="18">Новое сообщение</Label>
+            </StackPanel>
+            
+            <StackPanel Height="40" Grid.Row="1" Orientation="Horizontal">
+                <ToggleButton IsChecked="{Binding IsBold}" Command="{Binding BoldCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatBold" Width="20px" Height="20px"
+                                     HorizontalAlignment="Center"/>
+                </ToggleButton>
+                <ToggleButton IsChecked="{Binding IsItalic}" Command="{Binding ItalicCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatItalic" Width="20px" Height="20px"
+                                     HorizontalAlignment="Center"/>
+                </ToggleButton>
+                <ToggleButton IsChecked="{Binding IsUnderline}" Command="{Binding UnderlineCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatUnderline" Width="20px" Height="20px"
+                                     HorizontalAlignment="Center"/>
+                </ToggleButton>
+                <Button Command="{Binding LeftAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatAlignLeft" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                </Button>
+                <Button Command="{Binding CenterAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatAlignCenter" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                </Button>
+                <Button Command="{Binding RightAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatAlignRight" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                </Button>
+                
+                <Label Margin="40 0 0 0" FontSize="18" VerticalContentAlignment="Center">Font Size:</Label>
+                <Label Width="30" Content="{Binding ElementName=richTextBox, Path=FontSize}" VerticalContentAlignment="Center" FontSize="18"/>
+                
+                <Button Command="{Binding IncreaseFontSizeCommand}" Style="{DynamicResource FormatButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatFontSizeIncrease" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                </Button>
+                <Button Command="{Binding DecreaseFontSizeCommand}" Style="{DynamicResource FormatButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatFontSizeDecrease" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                </Button>
+
+                <Button Command="{Binding DecreaseFontSizeCommand}" Style="{DynamicResource FormatButtonStyle}">
+                    <materialDesign:PackIcon Kind="FormatFontSizeDecrease" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                </Button>
+            </StackPanel>
+            <RichTextBox Grid.Row="2" x:Name="richTextBox" />
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,136 @@
+﻿<Page x:Class="EmailApp.MVVM.View.LoginPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:EmailApp.MVVM.View"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d"  xmlns:viewmodel="clr-namespace:EmailApp.MVVM.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:LoginVM}"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="LoginPage"
+      xmlns:converters="clr-namespace:EmailApp.MVVM.ViewModel.Helpers.Converters">
+
+    <Page.Resources>
+        <converters:MultiStringToBooleanConverter x:Key="MultiStringToBooleanConverter" />
+        <Storyboard x:Key="CloseIconAnimation">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="Icon">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="-50"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:1" Value="2000"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:1" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </Page.Resources>
+
+    <Grid x:Name="AnimGrid" Opacity="0" RenderTransformOrigin="0.5,0.5" Background="White" Cursor="">
+        <Grid.RenderTransform>
+            <ScaleTransform ScaleX="1" ScaleY="1"/>
+        </Grid.RenderTransform>
+        <Grid x:Name="LoginGrid" VerticalAlignment="Center" HorizontalAlignment="Center"> 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+            <materialDesign:PackIcon Kind="EmailFast" Width="200" Height="200" 
+                                     Grid.ColumnSpan="2" HorizontalAlignment="Center" 
+                                     x:Name="Icon" Foreground="#1a73e8">
+                <materialDesign:PackIcon.RenderTransform>
+                    <TranslateTransform X="0"/>
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+            
+            <Label Grid.Row="1" Grid.Column="0" Content="Email:" Margin="5"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmailTextBox" Margin="5"
+                     Text="{Binding UserLogin, Mode=TwoWay}"/>
+            
+            <Label Grid.Row="2" Grid.Column="0" Content="Password:" Margin="5"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="PasswordTextBox" Margin="5"
+                     Text="{Binding UserPassword, Mode=TwoWay}"/>
+            
+            <Button Grid.Row="3" Content="Далее" Width="100" x:Name="NextBtn"
+                    Cursor="Hand" Background="#1a73e8" Foreground="White" IsDefault="True"
+                    HorizontalAlignment="Center" Margin="10" Grid.ColumnSpan="2" 
+                    BorderBrush="#1a73e8" Style="{DynamicResource MaterialDesignFlatDarkBgButton}" Click="NextBtn_Click">
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource MultiStringToBooleanConverter}">
+                        <Binding ElementName="EmailTextBox" Path="Text" />
+                        <Binding ElementName="PasswordTextBox" Path="Text" />
+                    </MultiBinding>
+                </Button.IsEnabled>
+            </Button>
+        </Grid>
+        
+        <Grid x:Name="ServerSelectionGrid" Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="250"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Content="Choose mail service." HorizontalAlignment="Center" 
+                   Grid.ColumnSpan="3" VerticalAlignment="Bottom" Margin="0 30 0 0" FontSize="32"/>
+
+            <Button Grid.Column="0" Grid.Row="1"
+                x:Name="rambler" Cursor="Hand"
+                HorizontalAlignment="Right"
+                Click="rambler_Click"
+                Style="{DynamicResource ServiceButtonStyle}"
+                Command="{Binding RamblerSelectedCommand}" >
+                <Grid Height="190" Width="190">
+                    <materialDesign:PackIcon Kind="CheckCircle"  Width="30" Height="30" Margin="10" 
+                                 VerticalAlignment="Top" HorizontalAlignment="Right" 
+                                 x:Name="RamblerIcon" Foreground="#1a73e8"
+                                 Visibility="Hidden"/>
+                    <Image Source="Assets/rambler.png" Width="100px"/>
+                </Grid>
+            </Button>
+            <Button Grid.Column="1" Grid.Row="1"
+                    x:Name="gmail" Cursor="Hand"                    
+                    Style="{DynamicResource ServiceButtonStyle}" 
+                    Command="{Binding GmailSelectedCommand}"
+                    Click="gmail_Click">
+                <Grid Height="190" Width="190">
+                    <materialDesign:PackIcon Kind="CheckCircle"  Width="30" Height="30" Margin="10" 
+                                     VerticalAlignment="Top" HorizontalAlignment="Right" 
+                                     x:Name="GmailIcon" Foreground="#1a73e8"
+                                     Visibility="Hidden"/>
+                    <Image Source="Assets/gmail.png" Width="100px"/>
+                </Grid>
+            </Button>
+            <Button Grid.Column="2" Grid.Row="1" Cursor="Hand"
+                    HorizontalAlignment="Left"
+                    x:Name="yandex" Command="{Binding YandexSelectedCommand}"
+                    Style="{DynamicResource ServiceButtonStyle}" Click="yandex_Click">
+                <Grid Height="190" Width="190">
+                    <materialDesign:PackIcon Kind="CheckCircle" Width="30" Height="30" Margin="10" 
+                                     VerticalAlignment="Top" HorizontalAlignment="Right" 
+                                     x:Name="YandexIcon" Foreground="#1a73e8"
+                                     Visibility="Hidden"/>
+                    <Image Source="Assets/yandex.png" Width="100px"/>
+                </Grid>
+            </Button>
+            
+            <Button Grid.Row="2" Grid.Column="0" Content="Назад" Width="100"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0 20 70 0" x:Name="BackBtn" Click="BackBtn_Click"
+                    Cursor="Hand" Foreground="#1a73e8" Background="White" 
+                    BorderBrush="#1a73e8" Style="{DynamicResource MaterialDesignOutlinedButton}" />
+            <Button Grid.Row="2" Grid.Column="2" Content="Войти" Width="100"
+                    Cursor="Hand" Background="#1a73e8" Foreground="White"
+                    HorizontalAlignment="Left" VerticalAlignment="Top" 
+                    Margin="70 20 0 0" x:Name="LoginBtn" IsEnabled="False" Command="{Binding LoginCommand}"
+                    BorderBrush="#1a73e8" Style="{DynamicResource MaterialDesignFlatDarkBgButton}" IsDefault="True"/>
+        </Grid>
+    </Grid>
+</Page>
