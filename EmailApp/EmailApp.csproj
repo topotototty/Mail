@@ -115,12 +115,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MVVM\Model\Email.cs" />
     <Compile Include="MVVM\Model\LoggedUser.cs" />
     <Compile Include="MVVM\ViewModel\Helpers\BindableCommand.cs" />
     <Compile Include="MVVM\ViewModel\Helpers\BindingsHelper.cs" />
     <Compile Include="MVVM\ViewModel\Helpers\Converters\MultiStringToBooleanConverter.cs" />
     <Compile Include="MVVM\ViewModel\Helpers\Converters\StringToBoolean.cs" />
-    <Compile Include="MVVM\ViewModel\Helpers\ImapHelper.cs" />
+    <Compile Include="MVVM\Model\ImapHelper.cs" />
     <Compile Include="MVVM\ViewModel\LoginVM.cs" />
     <Compile Include="MVVM\ViewModel\MainPageVM.cs" />
     <Compile Include="MVVM\ViewModel\MainVM.cs" />

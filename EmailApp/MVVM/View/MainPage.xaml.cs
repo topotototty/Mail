@@ -1,8 +1,11 @@
-﻿using EmailApp.MVVM.ViewModel;
+﻿using EmailApp.MVVM.Model;
+using EmailApp.MVVM.ViewModel;
 using EmailApp.MVVM.ViewModel.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,6 +33,35 @@ namespace EmailApp.MVVM.View
                 richTextBox = richTextBox
             };
             DataContext = mainPageVM;
+        }
+
+        private void CloseNewMassageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            NewMessageGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private void NewMessageBtn_Click(object sender, RoutedEventArgs e)
+        {
+            NewMessageGrid.Visibility = Visibility.Visible;
+        }
+
+
+
+        private void EmailList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            WebBrowser.Visibility = Visibility.Visible;
+            WebBrowser.NavigateToString(ImapHelper.ReadEmail((Email)EmailList.SelectedValue));
+        }
+
+        private void CloseWebBtn_Click(object sender, RoutedEventArgs e)
+        {
+            WebBrowser.Visibility = Visibility.Hidden;
+        }
+
+        private void SendBtn_Click(object sender, RoutedEventArgs e)
+        {
+            TextRange textRange = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
+            ImapHelper.SendEmail(textRange.Text, SubjectTextBox.Text, AddressTextBox.Text);
         }
     }
 }

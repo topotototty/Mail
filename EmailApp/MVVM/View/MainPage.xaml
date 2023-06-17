@@ -3,10 +3,13 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:EmailApp.MVVM.View" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewmodel="clr-namespace:EmailApp.MVVM.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainPageVM}"
+      xmlns:local="clr-namespace:EmailApp.MVVM.View" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewmodel="clr-namespace:EmailApp.MVVM.ViewModel" xmlns:converters="clr-namespace:EmailApp.MVVM.ViewModel.Helpers.Converters" d:DataContext="{d:DesignInstance Type=viewmodel:MainPageVM}"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="900"
       Title="MainPage">
+    <Page.Resources>
+        <converters:MultiStringToBooleanConverter x:Key="MultiStringToBooleanConverter" />
+    </Page.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -17,56 +20,87 @@
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Button x:Name="NewMessageBtn" Margin="10" Style="{DynamicResource FormatButtonStyle}" Background="#e9f1eb" Width="120" HorizontalAlignment="Left" Click="NewMessageBtn_Click">Новое сообщение</Button>
+        <ListBox Grid.Row="1" ItemsSource="{Binding Folders}" SelectedItem="{Binding SelectedFolder}" Background="AliceBlue"/>
 
-        <ListBox Grid.Row="1" ItemsSource="{Binding Folders}" Background="AliceBlue"/>
-        <Grid Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Right" >
+        <ListBox x:Name="EmailList" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Emails}" SelectedItem="{Binding SelectedEmail}" SelectionChanged="EmailList_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding subject}" FontWeight="Bold" />
+                        <TextBlock Text="{Binding from}" />
+                        <TextBlock Text="{Binding date}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Visibility="Hidden" Grid.Row="1" Grid.Column="1" Background="LightCyan">
             <Grid.RowDefinitions>
-                <RowDefinition Height="45" />
-                <RowDefinition Height="45" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel>
-                <Label FontSize="18">Новое сообщение</Label>
-            </StackPanel>
-            
-            <StackPanel Height="40" Grid.Row="1" Orientation="Horizontal">
-                <ToggleButton IsChecked="{Binding IsBold}" Command="{Binding BoldCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatBold" Width="20px" Height="20px"
-                                     HorizontalAlignment="Center"/>
-                </ToggleButton>
-                <ToggleButton IsChecked="{Binding IsItalic}" Command="{Binding ItalicCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatItalic" Width="20px" Height="20px"
-                                     HorizontalAlignment="Center"/>
-                </ToggleButton>
-                <ToggleButton IsChecked="{Binding IsUnderline}" Command="{Binding UnderlineCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatUnderline" Width="20px" Height="20px"
-                                     HorizontalAlignment="Center"/>
-                </ToggleButton>
-                <Button Command="{Binding LeftAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatAlignLeft" Width="20px" Height="20px" HorizontalAlignment="Center"/>
-                </Button>
-                <Button Command="{Binding CenterAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatAlignCenter" Width="20px" Height="20px" HorizontalAlignment="Center"/>
-                </Button>
-                <Button Command="{Binding RightAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatAlignRight" Width="20px" Height="20px" HorizontalAlignment="Center"/>
-                </Button>
-                
-                <Label Margin="40 0 0 0" FontSize="18" VerticalContentAlignment="Center">Font Size:</Label>
-                <Label Width="30" Content="{Binding ElementName=richTextBox, Path=FontSize}" VerticalContentAlignment="Center" FontSize="18"/>
-                
-                <Button Command="{Binding IncreaseFontSizeCommand}" Style="{DynamicResource FormatButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatFontSizeIncrease" Width="20px" Height="20px" HorizontalAlignment="Center"/>
-                </Button>
-                <Button Command="{Binding DecreaseFontSizeCommand}" Style="{DynamicResource FormatButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatFontSizeDecrease" Width="20px" Height="20px" HorizontalAlignment="Center"/>
-                </Button>
-
-                <Button Command="{Binding DecreaseFontSizeCommand}" Style="{DynamicResource FormatButtonStyle}">
-                    <materialDesign:PackIcon Kind="FormatFontSizeDecrease" Width="20px" Height="20px" HorizontalAlignment="Center"/>
-                </Button>
-            </StackPanel>
-            <RichTextBox Grid.Row="2" x:Name="richTextBox" />
+            <Button x:Name="CloseWebBtn" Style="{DynamicResource FormatButtonStyle}"
+                    Width="30" Background="Red" Foreground="White" HorizontalAlignment="Right" 
+                    Margin="0 0 5 0" Click="CloseWebBtn_Click">X</Button>      
+            <WebBrowser x:Name="WebBrowser" Grid.Row="1" />
         </Grid>
+        <Border x:Name="NewMessageGrid" Visibility="Visible" BorderBrush="#80afafaf" BorderThickness="1" CornerRadius="20 0 0 0"
+                Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Right" Background="#FFFFFF" VerticalAlignment="Bottom" MaxWidth="530px" Height="350">
+            <Grid Margin="15 15 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45" />
+                    <RowDefinition Height="45" />
+                    <RowDefinition Height="45" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBox Text="{Binding To}" x:Name="AddressTextBox" Margin=" 0 5 160 0" FontSize="16" VerticalContentAlignment="Center" materialDesign:HintAssist.Hint="Адрес получателя"></TextBox>
+                <TextBox Text="{Binding Subject}" x:Name="SubjectTextBox" Margin=" 0 5 20 0" Grid.Row="1" FontSize="16" VerticalContentAlignment="Center" materialDesign:HintAssist.Hint="Тема"></TextBox>
+                <Button x:Name="SendBtn" Content="Отправить" Width="80" HorizontalAlignment="Right" Margin="0 0 50 0" Style="{DynamicResource FormatButtonStyle}" Click="SendBtn_Click">
+                    <Button.IsEnabled>
+                        <MultiBinding Converter="{StaticResource MultiStringToBooleanConverter}">
+                            <Binding ElementName="AddressTextBox" Path="Text" />
+                            <Binding ElementName="SubjectTextBox" Path="Text" />
+                        </MultiBinding>
+                    </Button.IsEnabled>
+                </Button>
+                <Button x:Name="CloseNewMassageBtn" Style="{DynamicResource FormatButtonStyle}" Width="30" Background="Red" Foreground="White" HorizontalAlignment="Right"  Margin="0 0 5 0" Click="CloseNewMassageBtn_Click">X</Button>
+                <StackPanel Height="40" Grid.Row="2" Orientation="Horizontal">
+                    <ToggleButton IsChecked="{Binding IsBold}" Command="{Binding BoldCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
+                        <materialDesign:PackIcon Kind="FormatBold" Width="20px" Height="20px"
+                                         HorizontalAlignment="Center"/>
+                    </ToggleButton>
+                    <ToggleButton IsChecked="{Binding IsItalic}" Command="{Binding ItalicCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
+                        <materialDesign:PackIcon Kind="FormatItalic" Width="20px" Height="20px"
+                                         HorizontalAlignment="Center"/>
+                    </ToggleButton>
+                    <ToggleButton IsChecked="{Binding IsUnderline}" Command="{Binding UnderlineCommand}" Style="{DynamicResource FormatToggleButtonStyle}">
+                        <materialDesign:PackIcon Kind="FormatUnderline" Width="20px" Height="20px"
+                                         HorizontalAlignment="Center"/>
+                    </ToggleButton>
+                    <Button Command="{Binding LeftAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
+                        <materialDesign:PackIcon Kind="FormatAlignLeft" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                    </Button>
+                    <Button Command="{Binding CenterAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
+                        <materialDesign:PackIcon Kind="FormatAlignCenter" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                    </Button>
+                    <Button Command="{Binding RightAlignCommand}" Style="{DynamicResource FormatButtonStyle}">
+                        <materialDesign:PackIcon Kind="FormatAlignRight" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                    </Button>
+
+                    <Label Margin="40 0 0 0" FontSize="18" VerticalContentAlignment="Center">Font Size:</Label>
+                    <Label Width="30" Content="{Binding ElementName=richTextBox, Path=FontSize}" VerticalContentAlignment="Center" FontSize="18"/>
+
+                    <Button Command="{Binding IncreaseFontSizeCommand}" Style="{DynamicResource FormatButtonStyle}">
+                        <materialDesign:PackIcon Kind="FormatFontSizeIncrease" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                    </Button>
+                    <Button Command="{Binding DecreaseFontSizeCommand}" Style="{DynamicResource FormatButtonStyle}">
+                        <materialDesign:PackIcon Kind="FormatFontSizeDecrease" Width="20px" Height="20px" HorizontalAlignment="Center"/>
+                    </Button>
+
+                </StackPanel>
+                <RichTextBox Grid.Row="3" x:Name="richTextBox"/>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

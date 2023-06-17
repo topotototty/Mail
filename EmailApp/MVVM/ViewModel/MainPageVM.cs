@@ -11,6 +11,8 @@ using System.Windows;
 using EmailApp.MVVM.ViewModel.Helpers;
 using MailKit;
 using System.Collections.ObjectModel;
+using EmailApp.MVVM.Model;
+using ImapX;
 
 namespace EmailApp.MVVM.ViewModel
 {
@@ -64,6 +66,87 @@ namespace EmailApp.MVVM.ViewModel
 
         public IList<IMailFolder> Folders { get; set; }
 
+        private IMailFolder _selectedFolder;
+        public IMailFolder SelectedFolder
+        {
+            get { return _selectedFolder; }
+            set
+            {
+                _selectedFolder = value;
+                OnPropertyChanged();
+                SelectionChanged();
+            }
+        }
+
+        private ObservableCollection<Email> emails { get; set; }
+
+        public ObservableCollection<Email> Emails
+        {
+            get { return emails; }
+            set
+            {
+                emails = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private Email _selectedEmail;
+        public Email SelectedEmail
+        {
+            get { return _selectedEmail; }
+            set
+            {
+                _selectedEmail = value;
+                OnPropertyChanged();
+                _htmlSource = ImapHelper.ReadEmail(value);
+            }
+        }
+
+        private string _htmlSource;
+
+        public string HtmlSource
+        {
+            get { return _htmlSource; }
+            set 
+            {
+                _htmlSource = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _rtfString;
+        public  string RtfString
+        {
+            get { return _rtfString; }
+            set 
+            {
+                _rtfString = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _To;
+        public string To
+        {
+            get { return _To; }
+            set
+            {
+                _To = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _subject;
+        public string Subject
+        {
+            get { return _subject; }
+            set
+            {
+                _subject = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         public BindableCommand BoldCommand { get; set; }
@@ -76,19 +159,9 @@ namespace EmailApp.MVVM.ViewModel
         public BindableCommand DecreaseFontSizeCommand { get; set; }
 
 
+        public BindableCommand SendEmailCommand { get; set; } 
 
-        public MainPageVM()
-        {
-            BoldCommand = new BindableCommand(_ => { SetBold(IsBold); });
-            ItalicCommand = new BindableCommand(_ => { SetItalic(IsItalic); });
-            UnderlineCommand = new BindableCommand(_ => { SetUnderline(IsUnderline); });
-            LeftAlignCommand = new BindableCommand(_ => LeftAlign());
-            CenterAlignCommand = new BindableCommand(_ => CenterAlign());
-            RightAlignCommand = new BindableCommand(_ => RightAlign());
-            IncreaseFontSizeCommand = new BindableCommand(_ => IncreaseFontSize());
-            DecreaseFontSizeCommand = new BindableCommand(_ => DecreaseFontSize());
-            Folders = ImapHelper.GetFolders();
-        }
+        #region Команды текстового редактора
 
         private void SetBold(bool isBold)
         {
@@ -174,5 +247,30 @@ namespace EmailApp.MVVM.ViewModel
             catch { }
         }
 
+        #endregion
+        public MainPageVM()
+        {
+            BoldCommand = new BindableCommand(_ => { SetBold(IsBold); });
+            ItalicCommand = new BindableCommand(_ => { SetItalic(IsItalic); });
+            UnderlineCommand = new BindableCommand(_ => { SetUnderline(IsUnderline); });
+            LeftAlignCommand = new BindableCommand(_ => LeftAlign());
+            CenterAlignCommand = new BindableCommand(_ => CenterAlign());
+            RightAlignCommand = new BindableCommand(_ => RightAlign());
+            IncreaseFontSizeCommand = new BindableCommand(_ => IncreaseFontSize());
+            DecreaseFontSizeCommand = new BindableCommand(_ => DecreaseFontSize());
+
+            SendEmailCommand = new BindableCommand(_ => SendEmail());
+            Folders = ImapHelper.GetFolders();
+        }
+
+        private void SendEmail()
+        {
+            ImapHelper.SendEmail(_rtfString, _subject, _To);
+        }
+
+        private async void SelectionChanged()
+        {
+            Emails =  ImapHelper.GetEmails(SelectedFolder.FullName);
+        }
     }
 }
